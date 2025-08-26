@@ -1,4 +1,4 @@
-# appai
+# AI Modern App
 
 Monorepo moderno con Bun Workspaces que incluye:
 
@@ -14,7 +14,7 @@ Monorepo moderno con Bun Workspaces que incluye:
 ## Estructura del proyecto
 
 ```text
-appai/
+app/
 ├─ index.ts                 # Script de ejemplo en raíz (Bun)
 ├─ package.json             # Workspaces de Bun
 ├─ tsconfig.json
