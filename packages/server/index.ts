@@ -1,16 +1,10 @@
 import dotenv from 'dotenv';
 import type { Request, Response } from 'express';
 import express from 'express';
-import Openai from 'openai';
 import z from 'zod';
-import { conversationRepository } from './repositories/conversation.repository';
+import { chatService } from './services/chat.service';
 
 dotenv.config();
-
-const client = new Openai({
-   baseURL: 'https://openrouter.ai/api/v1',
-   apiKey: process.env.OPENROUTER_API_KEY,
-});
 
 const app = express();
 app.use(express.json());
@@ -39,27 +33,8 @@ app.post('/api/chat', async (req: Request, res: Response) => {
 
    try {
       const { prompt, conversationId = 'default' } = parseResult.data;
-      conversationRepository.addMessageToConversation(conversationId, {
-         role: 'user',
-         content: prompt,
-      });
-
-      const response = await client.chat.completions.create({
-         model: 'cognitivecomputations/dolphin-mistral-24b-venice-edition:free',
-         messages: conversationRepository.getConversationHistory(conversationId),
-         max_completion_tokens: 150,
-      });
-
-      const content = response.choices[0]?.message?.content || 'No response generated';
-      conversationRepository.addMessageToConversation(conversationId, {
-         role: 'assistant',
-         content,
-      });
-
-      res.json({
-         message: content,
-         conversationId: conversationId,
-      });
+      const response = await chatService.sendMessage(prompt, conversationId);
+      res.json({ message: response.message, conversationId: conversationId });
    } catch (error) {
       console.error('Error calling OpenAI:', error);
       res.status(500).json({ error: 'Failed to generate response' });
