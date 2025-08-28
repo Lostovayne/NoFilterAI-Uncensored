@@ -1,0 +1,90 @@
+{
+   "name": "API Híbrida Tests",
+   "description": "Collection para probar todos los tipos de modelos",
+   "requests": [
+      {
+         "name": "1. Chat Simple - Dolphin Mistral",
+         "method": "POST",
+         "url": "http://localhost:3000/api/chat",
+         "headers": {
+            "Content-Type": "application/json"
+         },
+         "body": {
+            "prompt": "Explícame qué es JavaScript en 2 párrafos",
+            "conversationId": "550e8400-e29b-41d4-a716-446655440000"
+         },
+         "description": "Modelo rápido sin herramientas. Ideal para respuestas simples."
+      },
+      {
+         "name": "2. Memoria - Establecer contexto",
+         "method": "POST",
+         "url": "http://localhost:3000/api/chat",
+         "headers": {
+            "Content-Type": "application/json"
+         },
+         "body": {
+            "prompt": "Soy María, tengo 25 años y trabajo como diseñadora UX. Me gusta el café y odio el té",
+            "conversationId": "550e8400-e29b-41d4-a716-446655440001",
+            "modelType": "memory",
+            "useMemory": true
+         }
+      },
+      {
+         "name": "3. Memoria - Recordar información",
+         "method": "POST",
+         "url": "http://localhost:3000/api/chat",
+         "headers": {
+            "Content-Type": "application/json"
+         },
+         "body": {
+            "prompt": "¿Cuál es mi nombre, edad y profesión? ¿Qué bebida prefiero?",
+            "conversationId": "550e8400-e29b-41d4-a716-446655440001",
+            "modelType": "memory",
+            "useMemory": true
+         }
+      },
+      {
+         "name": "4. Conocimiento - Enseñar algo",
+         "method": "POST",
+         "url": "http://localhost:3000/api/chat",
+         "headers": {
+            "Content-Type": "application/json"
+         },
+         "body": {
+            "prompt": "Aprende: Tailwind CSS es un framework utility-first que permite crear diseños rápidamente sin salir del HTML",
+            "conversationId": "550e8400-e29b-41d4-a716-446655440002",
+            "modelType": "with_tools",
+            "useKnowledgeBase": true
+         }
+      },
+      {
+         "name": "5. Conocimiento - Preguntar lo aprendido",
+         "method": "POST",
+         "url": "http://localhost:3000/api/chat",
+         "headers": {
+            "Content-Type": "application/json"
+         },
+         "body": {
+            "prompt": "¿Qué me puedes decir sobre Tailwind CSS?",
+            "conversationId": "550e8400-e29b-41d4-a716-446655440003",
+            "modelType": "with_tools",
+            "useKnowledgeBase": true
+         }
+      },
+      {
+         "name": "6. Híbrido Completo",
+         "method": "POST",
+         "url": "http://localhost:3000/api/chat",
+         "headers": {
+            "Content-Type": "application/json"
+         },
+         "body": {
+            "prompt": "Considerando mi perfil profesional y lo que sabes de Tailwind, ¿me recomiendas usarlo?",
+            "conversationId": "550e8400-e29b-41d4-a716-446655440001",
+            "modelType": "with_tools",
+            "useMemory": true,
+            "useKnowledgeBase": true
+         }
+      }
+   ]
+}
