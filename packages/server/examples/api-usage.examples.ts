@@ -31,6 +31,23 @@ const chatWithTools = {
    useKnowledgeBase: true,
 };
 
+// 🎨 GENERACIÓN DE IMÁGENES
+const imageGeneration = {
+   prompt: 'Crea una imagen de un gato volando en el espacio con estrellas de fondo',
+   conversationId: '123e4567-e89b-12d3-a456-426614174000',
+   modelType: 'simple',
+   taskType: 'image',
+   useMemory: false,
+   useKnowledgeBase: false,
+};
+
+// 🌅 IMAGEN DE PAISAJE
+const landscapeImage = {
+   prompt: 'Generate a beautiful sunset over mountains with a lake reflection',
+   conversationId: '123e4567-e89b-12d3-a456-426614174000',
+   taskType: 'image',
+};
+
 // 🤖 AUTOMÁTICO (la IA decide las herramientas)
 const chatAuto = {
    prompt: '¿Qué me dijiste sobre React la semana pasada?',
@@ -57,12 +74,18 @@ const chatAuto = {
    - Combina memoria y conocimiento
    - Experiencia completa de IA
 
+5. **Generación de Imágenes**: taskType: "image"
+   - Crear imágenes desde descripciones de texto
+   - "Crea una imagen de..."
+   - Respuesta incluye imágenes en formato base64
+
 📊 COMPARACIÓN DE MODELOS:
 
 simple        → Rápido, sin herramientas, económico
 memory        → Memoria conversacional, contexto inteligente  
 with_tools    → Herramientas completas, aprendizaje, búsqueda
+image         → Generación de imágenes con IA
 
 */
 
-export { chatSimple, chatWithMemory, chatWithTools, chatAuto };
+export { chatSimple, chatWithMemory, chatWithTools, chatAuto, imageGeneration, landscapeImage };
