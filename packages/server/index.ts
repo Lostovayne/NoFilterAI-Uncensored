@@ -1,7 +1,7 @@
 import { configDotenv } from 'dotenv';
 import express from 'express';
-import { join } from 'path';
 import { existsSync } from 'fs';
+import { join } from 'path';
 import router from './routes';
 
 configDotenv();
@@ -12,6 +12,12 @@ app.use(express.json());
 
 // API routes
 app.use('/api/chat', router);
+
+// Servir imágenes generadas
+app.use('/generated-images', express.static(join(process.cwd(), 'generated-images')));
+
+// Servir audios generados
+app.use('/generated-audio', express.static(join(process.cwd(), 'generated-audio')));
 
 // Health check endpoint
 app.get('/health', (req, res) => {

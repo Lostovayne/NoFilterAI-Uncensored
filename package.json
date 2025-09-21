@@ -4,8 +4,11 @@
    "type": "module",
    "private": true,
    "scripts": {
-      "dev": "bun run index.ts",
+      "dev": "concurrently \"cd packages/server && bun run dev\" \"cd packages/client && bun run dev\"",
+      "dev:server": "cd packages/server && bun run dev",
+      "dev:client": "cd packages/client && bun run dev",
       "build": "cd packages/client && bun run build",
+      "build:all": "bun run build && cd packages/server && bun run build",
       "start": "cd packages/server && bun run start",
       "format": "prettier --write .",
       "prepare": "husky"

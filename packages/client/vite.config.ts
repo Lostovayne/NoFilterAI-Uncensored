@@ -1,8 +1,8 @@
-import { defineConfig } from 'vite';
+import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
 
 import path from 'path';
-import tailwindcss from '@tailwindcss/vite';
+import { defineConfig } from 'vite';
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -18,6 +18,7 @@ export default defineConfig({
    server: {
       proxy: {
          '/api': 'http://localhost:3000',
+         '/generated-images': 'http://localhost:3000',
       },
    },
 });

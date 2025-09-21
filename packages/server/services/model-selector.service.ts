@@ -1,10 +1,10 @@
 import type {
-   ModelConfig,
-   IModelSelectorService,
    AppError,
+   IModelSelectorService,
+   ModelConfig,
    ValidationResult,
 } from '../types/model.types';
-import { ModelType, TaskType, ModelProvider, ErrorCode } from '../types/model.types';
+import { ErrorCode, ModelProvider, ModelType, TaskType } from '../types/model.types';
 
 // ===== MODEL CONFIGURATION REGISTRY =====
 class ModelConfigRegistry {
@@ -20,7 +20,21 @@ class ModelConfigRegistry {
    private initializeDefaultModels(): void {
       const defaultModels: ModelConfig[] = [
          {
-            id: 'simple-chat',
+            id: 'gemini-pro',
+            name: 'gemini-2.5-flash',
+            provider: ModelProvider.GEMINI,
+            supports: {
+               tools: true,
+               vision: true,
+               streaming: true,
+               imageGeneration: true,
+               audioProcessing: true,
+            },
+            maxTokens: 8192,
+            isActive: true,
+         },
+         {
+            id: 'uncensored-chat',
             name: 'cognitivecomputations/dolphin-mistral-24b-venice-edition:free',
             provider: ModelProvider.OPENROUTER,
             supports: {
@@ -30,49 +44,7 @@ class ModelConfigRegistry {
                imageGeneration: false,
                audioProcessing: false,
             },
-            maxTokens: 200,
-            isActive: true,
-         },
-         {
-            id: 'tools-chat',
-            name: 'meta-llama/llama-4-scout:free',
-            provider: ModelProvider.OPENROUTER,
-            supports: {
-               tools: true,
-               vision: false,
-               streaming: true,
-               imageGeneration: false,
-               audioProcessing: false,
-            },
-            maxTokens: 500,
-            isActive: true,
-         },
-         {
-            id: 'image-generation',
-            name: 'google/gemini-2.5-flash-image-preview:free',
-            provider: ModelProvider.OPENROUTER,
-            supports: {
-               tools: false,
-               vision: false,
-               streaming: false,
-               imageGeneration: true,
-               audioProcessing: false,
-            },
-            maxTokens: 0,
-            isActive: true,
-         },
-         {
-            id: 'vision-chat',
-            name: 'meta-llama/llama-3.2-11b-vision-instruct:free',
-            provider: ModelProvider.OPENROUTER,
-            supports: {
-               tools: true,
-               vision: true,
-               streaming: true,
-               imageGeneration: false,
-               audioProcessing: false,
-            },
-            maxTokens: 400,
+            maxTokens: 4096,
             isActive: true,
          },
       ];
@@ -221,12 +193,10 @@ class ModelSelectorService implements IModelSelectorService {
          // Filter by model type and capabilities
          const filteredModels = candidateModels.filter((model) => {
             switch (modelType) {
-               case ModelType.SIMPLE:
-                  return !useMemory && !model.supports.tools;
-               case ModelType.WITH_TOOLS:
+               case ModelType.GEMINI:
                   return model.supports.tools;
-               case ModelType.MEMORY:
-                  return model.supports.tools;
+               case ModelType.UNCENSORED:
+                  return !model.supports.tools;
                default:
                   return true;
             }
@@ -249,7 +219,7 @@ class ModelSelectorService implements IModelSelectorService {
          }
 
          // Return the first suitable model (could implement ranking here)
-         return filteredModels[0]!;
+         return filteredModels[0] as ModelConfig;
       } catch (error) {
          if (error instanceof Error && 'code' in error) {
             throw error; // Re-throw AppError
@@ -262,7 +232,7 @@ class ModelSelectorService implements IModelSelectorService {
    }
 
    supportsTools(modelType: ModelType, useMemory: boolean): boolean {
-      return modelType === ModelType.WITH_TOOLS || modelType === ModelType.MEMORY || useMemory;
+      return modelType === ModelType.GEMINI || useMemory;
    }
 
    getModelConfig(modelId: string): ModelConfig | undefined {
@@ -327,4 +297,4 @@ class ModelSelectorService implements IModelSelectorService {
 
 // ===== EXPORTS =====
 export const modelSelectorService = new ModelSelectorService();
-export { ModelSelectorService, ModelConfigRegistry };
+export { ModelConfigRegistry, ModelSelectorService };

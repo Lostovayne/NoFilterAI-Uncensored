@@ -1,0 +1,180 @@
+### ===== NOFILTER AI - TEST ENDPOINTS =====
+### Frontend: http://localhost:5174
+### Backend API: http://localhost:3000/api/chat
+
+### 🏥 Health Check
+GET http://localhost:3000/health
+
+###
+
+### 🤖 Chat básico con Gemini 2.5 Flash Lite (económico)
+POST http://localhost:3000/api/chat/gemini
+Content-Type: application/json
+
+{
+   "prompt": "Hola, ¿cómo estás? Cuéntame sobre las capacidades de Gemini 2.5",
+   "conversationId": "{{$guid}}",
+   "taskType": "chat",
+   "useKnowledgeBase": true,
+   "temperature": 0.8,
+   "maxTokens": 4096
+}
+
+###
+
+### 🎨 Generar imagen REAL con Gemini Image Preview
+POST http://localhost:3000/api/chat/gemini/image
+Content-Type: application/json
+
+{
+   "prompt": "A beautiful sunset over a serene lake with mountains in the background, photorealistic style",
+   "conversationId": "{{$guid}}",
+   "style": "photorealistic",
+   "quality": "high",
+   "aspectRatio": "16:9"
+}
+
+###
+
+### 🎨 Generar imagen artística
+POST http://localhost:3000/api/chat/gemini/image
+Content-Type: application/json
+
+{
+   "prompt": "A futuristic city with flying cars and neon lights",
+   "conversationId": "{{$guid}}",
+   "style": "artistic",
+   "quality": "high", 
+   "aspectRatio": "9:16"
+}
+
+###
+
+### 🎨 Generar imagen cartoon
+POST http://localhost:3000/api/chat/gemini/image
+Content-Type: application/json
+
+{
+   "prompt": "A cute robot playing with colorful balloons in a park",
+   "conversationId": "{{$guid}}",
+   "style": "cartoon",
+   "quality": "standard",
+   "aspectRatio": "1:1"
+}
+
+###
+
+### 🔓 Chat sin censura (OpenRouter)
+POST http://localhost:3000/api/chat/uncensored
+Content-Type: application/json
+
+{
+   "prompt": "Cuéntame un chiste picante sobre programadores",
+   "conversationId": "{{$guid}}",
+   "temperature": 0.9,
+   "maxTokens": 2048
+}
+
+###
+
+### 👁️ Análisis de imagen con Gemini Vision
+POST http://localhost:3000/api/chat/gemini
+Content-Type: application/json
+
+{
+   "prompt": "Analiza esta imagen y describe todo lo que ves en detalle",
+   "conversationId": "{{$guid}}",
+   "taskType": "vision",
+   "useKnowledgeBase": false
+}
+
+###
+
+### 🎵 Generación de audio con Gemini TTS
+POST http://localhost:3000/api/chat/gemini
+Content-Type: application/json
+
+{
+   "prompt": "Convert this text to speech: Hello, this is a test of the Gemini text-to-speech capabilities",
+   "conversationId": "{{$guid}}",
+   "taskType": "text_to_speech"
+}
+
+###
+
+### 🧠 Chat con memoria automática
+POST http://localhost:3000/api/chat/gemini
+Content-Type: application/json
+
+{
+   "prompt": "Me llamo Juan y trabajo como desarrollador en Madrid. Me gusta la programación en TypeScript",
+   "conversationId": "{{$guid}}",
+   "taskType": "chat",
+   "useKnowledgeBase": true
+}
+
+###
+
+### 🧠 Recuperar información con memoria
+POST http://localhost:3000/api/chat/gemini  
+Content-Type: application/json
+
+{
+   "prompt": "¿Recuerdas mi nombre y a qué me dedico?",
+   "conversationId": "{{$guid}}",
+   "taskType": "chat",
+   "useKnowledgeBase": true
+}
+
+###
+
+### 📊 Test de endpoints múltiples (Batch testing)
+POST http://localhost:3000/api/chat/gemini
+Content-Type: application/json
+
+{
+   "prompt": "Dame un resumen de todas tus capacidades multimodales",
+   "conversationId": "test-capabilities",
+   "taskType": "chat",
+   "useKnowledgeBase": false,
+   "temperature": 0.7,
+   "maxTokens": 2048
+}
+
+###
+
+### 🎯 Test de generación de imagen específica
+POST http://localhost:3000/api/chat/gemini/image
+Content-Type: application/json
+
+{
+   "prompt": "Un gato con gafas de sol conduciendo una motocicleta por una carretera costera al atardecer",
+   "conversationId": "test-image-generation",
+   "style": "photorealistic",
+   "quality": "high",
+   "aspectRatio": "16:9"
+}
+
+###
+
+### 🔥 Test uncensored avanzado
+POST http://localhost:3000/api/chat/uncensored
+Content-Type: application/json
+
+{
+   "prompt": "Escribe un diálogo picante entre dos personajes en una situación cómica",
+   "conversationId": "test-uncensored",
+   "temperature": 1.0,
+   "maxTokens": 1500
+}
+
+###
+
+### ===== VERIFICACIÓN DE IMÁGENES GENERADAS =====
+### Las imágenes se sirven desde: http://localhost:3000/generated-images/
+### Ejemplo: GET http://localhost:3000/generated-images/gemini-image-1234567890.png
+
+### 🖼️ Listar directorio de imágenes (si está configurado)
+GET http://localhost:3000/generated-images/
+
+###

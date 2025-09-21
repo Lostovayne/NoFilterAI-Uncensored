@@ -1,0 +1,205 @@
+### Peticiones HTTP para probar el backend NoFilterAI optimizado
+
+# Health check del servidor principal
+GET http://localhost:3000/health
+Accept: application/json
+
+###
+# ===== GEMINI 2.5 PRO ENDPOINTS =====
+
+# Información del API de Gemini
+GET http://localhost:3000/api/chat/gemini
+Accept: application/json
+
+### Health check de Gemini
+GET http://localhost:3000/api/chat/gemini/health
+Accept: application/json
+
+### Chat básico con Gemini 2.5 Pro (con memoria y knowledge base)
+POST http://localhost:3000/api/chat/gemini
+Content-Type: application/json
+
+{
+  "prompt": "Hola, soy Franco y hoy estoy de vacaciones. ¿Qué me recomiendas hacer?",
+  "conversationId": "550e8400-e29b-41d4-a716-446655440000",
+  "taskType": "chat",
+  "useMemory": true,
+  "useKnowledgeBase": true,
+  "temperature": 0.8,
+  "maxTokens": 400
+}
+
+### Chat avanzado con parámetros profesionales
+POST http://localhost:3000/api/chat/gemini
+Content-Type: application/json
+
+{
+  "prompt": "Necesito ayuda para optimizar el rendimiento de una base de datos PostgreSQL con 10M de registros",
+  "conversationId": "550e8400-e29b-41d4-a716-446655440001",
+  "taskType": "chat",
+  "useMemory": true,
+  "useKnowledgeBase": true,
+  "temperature": 0.3,
+  "topK": 20,
+  "topP": 0.8,
+  "maxTokens": 650,
+  "safetyLevel": "none"
+}
+
+### Análisis de visión con Gemini
+POST http://localhost:3000/api/chat/gemini
+Content-Type: application/json
+
+{
+  "prompt": "Analiza la arquitectura de este diagrama y explica los componentes principales",
+  "conversationId": "550e8400-e29b-41d4-a716-446655440002",
+  "taskType": "vision",
+  "useMemory": true,
+  "useKnowledgeBase": true,
+  "temperature": 0.5,
+  "maxTokens": 300
+}
+
+### Procesamiento de audio con Gemini
+POST http://localhost:3000/api/chat/gemini
+Content-Type: application/json
+
+{
+  "prompt": "Transcribe y analiza el contenido de este archivo de audio",
+  "conversationId": "550e8400-e29b-41d4-a716-446655440003",
+  "taskType": "audio",
+  "useMemory": true,
+  "temperature": 0.2,
+  "maxTokens": 500
+}
+
+### Conversión texto a voz con modelo especializado
+POST http://localhost:3000/api/chat/gemini
+Content-Type: application/json
+
+{
+  "prompt": "Convierte este texto a audio con voz natural y expresiva: 'Bienvenido a NoFilterAI, el futuro de la inteligencia artificial sin limitaciones'",
+  "conversationId": "550e8400-e29b-41d4-a716-446655440004",
+  "taskType": "text_to_speech",
+  "temperature": 0.1,
+  "maxTokens": 1024
+}
+
+### Conversión voz a texto con modelo especializado
+POST http://localhost:3000/api/chat/gemini
+Content-Type: application/json
+
+{
+  "prompt": "Transcribe el audio que adjunto y formatea el texto de manera profesional",
+  "conversationId": "550e8400-e29b-41d4-a716-446655440011",
+  "taskType": "speech_to_text",
+  "temperature": 0.2,
+  "maxTokens": 2048
+}
+
+### Optimización de prompt para imagen (Gemini) - Genera descripción detallada
+POST http://localhost:3000/api/chat/gemini/image
+Content-Type: application/json
+
+{
+  "prompt": "Un paisaje futurista con ciudades flotantes y naves espaciales",
+  "conversationId": "550e8400-e29b-41d4-a716-446655440005",
+  "style": "photorealistic",
+  "quality": "high",
+  "aspectRatio": "16:9"
+}
+###
+# NOTA: ⚠️ Este endpoint genera PROMPTS OPTIMIZADOS para usar en DALL-E, Midjourney, etc.
+# Gemini no genera imágenes reales, pero crea descripciones muy detalladas
+
+### Generación de imagen real con DALL-E 3 (cuando esté configurado)
+POST http://localhost:3000/api/images/dalle
+Content-Type: application/json
+
+{
+  "prompt": "Un paisaje futurista con ciudades flotantes y naves espaciales",
+  "conversationId": "550e8400-e29b-41d4-a716-446655440005",
+  "style": "photorealistic",
+  "quality": "high",
+  "aspectRatio": "16:9"
+}
+###
+# NOTA: ✅ Este endpoint genera IMÁGENES REALES usando DALL-E 3
+# Requiere OPENAI_API_KEY en el .env
+
+### Generación de imagen de cartoon con modelo especializado
+POST http://localhost:3000/api/chat/gemini/image
+Content-Type: application/json
+
+{
+  "prompt": "Un gato programador trabajando en una computadora con múltiples monitores, estilo cartoon divertido",
+  "conversationId": "550e8400-e29b-41d4-a716-446655440012",
+  "style": "cartoon",
+  "quality": "standard",
+  "aspectRatio": "4:3"
+}
+
+### Chat con almacenamiento de datos temporales
+POST http://localhost:3000/api/chat/gemini
+Content-Type: application/json
+
+{
+  "prompt": "Guarda temporalmente esta información: estoy trabajando en un proyecto de IA. Luego recuérdamelo.",
+  "conversationId": "550e8400-e29b-41d4-a716-446655440013",
+  "taskType": "chat",
+  "useMemory": true,
+  "useKnowledgeBase": true,
+  "temperature": 0.7,
+  "maxTokens": 2048
+}
+
+###
+# ===== CHAT SIN CENSURA ENDPOINTS =====
+
+# Información del API sin censura
+GET http://localhost:3000/api/chat/uncensored
+Accept: application/json
+
+### Health check del chat sin censura
+GET http://localhost:3000/api/chat/uncensored/health
+Accept: application/json
+
+### Chat sin censura básico
+POST http://localhost:3000/api/chat/uncensored
+Content-Type: application/json
+
+{
+  "prompt": "Explícame sobre temas controversiales sin filtros",
+  "conversationId": "550e8400-e29b-41d4-a716-446655440007",
+  "temperature": 0.9,
+  "maxTokens": 2048
+}
+
+### Chat sin censura con alta creatividad
+POST http://localhost:3000/api/chat/uncensored
+Content-Type: application/json
+
+{
+  "prompt": "Escribe una historia sin restricciones sobre aventuras épicas",
+  "conversationId": "550e8400-e29b-41d4-a716-446655440008",
+  "temperature": 1.2,
+  "maxTokens": 4096
+}
+
+###
+# ===== ENDPOINTS LEGACY (compatibilidad) =====
+
+# Información del API original
+GET http://localhost:3000/api/chat
+Accept: application/json
+
+### Chat original (funcionalidad básica)
+POST http://localhost:3000/api/chat
+Content-Type: application/json
+
+{
+  "prompt": "Hola, este es el endpoint original",
+  "conversationId": "550e8400-e29b-41d4-a716-446655440009",
+  "modelType": "gemini",
+  "taskType": "chat"
+}

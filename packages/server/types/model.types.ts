@@ -1,8 +1,7 @@
 // ===== DOMAIN ENUMS =====
 export enum ModelType {
-   SIMPLE = 'simple', // Chat básico sin herramientas
-   WITH_TOOLS = 'with_tools', // Chat con herramientas (memoria, conocimiento)
-   MEMORY = 'memory', // Chat con memoria conversacional
+   GEMINI = 'gemini', // Gemini 2.5 Pro con herramientas completas
+   UNCENSORED = 'uncensored', // Modelo sin censura para chat libre
 }
 
 export enum TaskType {
@@ -10,13 +9,13 @@ export enum TaskType {
    IMAGE = 'image', // Generación de imágenes
    AUDIO = 'audio', // Procesamiento de audio
    VISION = 'vision', // Análisis de imágenes
+   TEXT_TO_SPEECH = 'text_to_speech', // Conversión texto a voz
+   SPEECH_TO_TEXT = 'speech_to_text', // Conversión voz a texto
 }
 
 export enum ModelProvider {
-   OPENROUTER = 'openrouter',
-   OPENAI = 'openai',
-   ANTHROPIC = 'anthropic',
-   CUSTOM = 'custom',
+   GEMINI = 'gemini',
+   OPENROUTER = 'openrouter', // Solo para modelo sin censura
 }
 
 export enum MessageRole {
@@ -110,6 +109,8 @@ export interface ChatResponse {
    toolsUsed?: string[];
    conversationId: string;
    images?: GeneratedImage[];
+   audioUrl?: string;
+   videoUrl?: string;
    usage?: {
       promptTokens: number;
       completionTokens: number;
