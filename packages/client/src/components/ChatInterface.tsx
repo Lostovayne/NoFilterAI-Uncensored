@@ -14,6 +14,8 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = () => {
       selectConversation,
       sendMessage,
       generateImage,
+      generateAudio,
+      generateVideo,
       clearError,
       deleteConversation,
    } = useChatStore();
@@ -57,6 +59,10 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = () => {
       try {
          if (selectedEndpoint === 'image') {
             await generateImage(currentConversationId, message, imageOptions);
+         } else if (selectedEndpoint === 'audio') {
+            await generateAudio(currentConversationId, message);
+         } else if (selectedEndpoint === 'video') {
+            await generateVideo(currentConversationId, message);
          } else {
             const options =
                selectedEndpoint === 'gemini'
@@ -299,6 +305,36 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = () => {
                                           (e.target as HTMLImageElement).style.display = 'none';
                                        }}
                                     />
+                                 </div>
+                              )}
+                              {/* Audio */}
+                              {message.type === 'audio' && message.audioUrl && (
+                                 <div className="mt-3">
+                                    <audio
+                                       controls
+                                       className="w-full"
+                                       onError={(e) => {
+                                          console.error('Error loading audio:', message.audioUrl);
+                                       }}
+                                    >
+                                       <source src={message.audioUrl} type="audio/wav" />
+                                       Tu navegador no soporta el elemento de audio.
+                                    </audio>
+                                 </div>
+                              )}
+                              {/* Video */}
+                              {message.type === 'video' && message.videoUrl && (
+                                 <div className="mt-3">
+                                    <video
+                                       controls
+                                       className="max-w-full h-auto rounded-lg shadow-lg"
+                                       onError={(e) => {
+                                          console.error('Error loading video:', message.videoUrl);
+                                       }}
+                                    >
+                                       <source src={message.videoUrl} type="video/mp4" />
+                                       Tu navegador no soporta el elemento de video.
+                                    </video>
                                  </div>
                               )}{' '}
                               {/* Metadata */}

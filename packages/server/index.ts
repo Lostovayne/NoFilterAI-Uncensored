@@ -19,6 +19,9 @@ app.use('/generated-images', express.static(join(process.cwd(), 'generated-image
 // Servir audios generados
 app.use('/generated-audio', express.static(join(process.cwd(), 'generated-audio')));
 
+// Servir videos generados
+app.use('/generated-videos', express.static(join(process.cwd(), 'generated-videos')));
+
 // Health check endpoint
 app.get('/health', (req, res) => {
    res.json({

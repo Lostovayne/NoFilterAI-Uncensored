@@ -24,6 +24,12 @@ if (!fs.existsSync(AUDIO_DIR)) {
    fs.mkdirSync(AUDIO_DIR, { recursive: true });
 }
 
+// Directorio para guardar videos generados
+const VIDEO_DIR = path.join(process.cwd(), 'generated-videos');
+if (!fs.existsSync(VIDEO_DIR)) {
+   fs.mkdirSync(VIDEO_DIR, { recursive: true });
+}
+
 // Función para guardar archivos WAV
 async function saveWaveFile(
    filename: string,
@@ -325,13 +331,53 @@ export const geminiService = {
    },
 
    // Generación de video con Veo 3.0
-   async generateVideo(prompt: string, conversationId: string): Promise<ChatResponse> {
+   async generateVideo(
+      prompt: string,
+      conversationId: string,
+      options: { duration?: number; quality?: string } = {}
+   ): Promise<ChatResponse> {
       try {
-         console.log('🎬 Iniciando generación de video con Veo 3.0...');
+         console.log('🎬 Generando video REAL con Veo 3.0...');
 
-         // Nota: La implementación completa de video requiere más configuración
-         // Por ahora, simular la respuesta
-         const content = `🎬 Video en proceso de generación con Veo 3.0...\n\nPrompt: "${prompt}"\n\n⏳ La generación de video puede tomar varios minutos. En una implementación completa, esto sería un proceso asíncrono con polling.`;
+         console.log('📝 Prompt de video:', prompt);
+
+         // Iniciar generación de video usando la API correcta
+         let operation = await ai.models.generateVideos({
+            model: 'veo-3.0-generate-001',
+            prompt: prompt,
+         });
+
+         console.log('⏳ Video en proceso de generación, iniciando polling...');
+
+         // Polling hasta que el video esté listo
+         while (!operation.done) {
+            console.log('🔄 Esperando generación de video...');
+            await new Promise((resolve) => setTimeout(resolve, 10000)); // Esperar 10 segundos
+            operation = await ai.operations.getVideosOperation({
+               operation: operation,
+            });
+         }
+
+         if (!operation.response?.generatedVideos?.[0]?.video) {
+            throw new Error('No se generó el video correctamente');
+         }
+
+         // Crear nombre de archivo único
+         const filename = `gemini-video-${Date.now()}.mp4`;
+         const filepath = path.join(VIDEO_DIR, filename);
+
+         console.log('📥 Descargando video generado...');
+
+         // Descargar el video generado
+         await ai.files.download({
+            file: operation.response.generatedVideos[0].video,
+            downloadPath: filepath,
+         });
+
+         const videoUrl = `/generated-videos/${filename}`;
+         const content = `🎬 Video generado exitosamente: ${filename}`;
+
+         console.log(`🎬 Video guardado en: ${filepath}`);
 
          // Almacenar en conversación
          await conversationRepository.addMessage(conversationId, {
@@ -348,8 +394,14 @@ export const geminiService = {
             id: crypto.SHA256(conversationId + Date.now()).toString(),
             message: content,
             modelUsed: 'veo-3.0-generate-001',
-            toolsUsed: ['video_generation_placeholder'],
+            toolsUsed: ['video_generation'],
             conversationId,
+            videoUrl,
+            usage: {
+               promptTokens: prompt.length / 4,
+               completionTokens: content.length / 4,
+               totalTokens: (prompt.length + content.length) / 4,
+            },
          };
       } catch (error: unknown) {
          console.error('❌ Error generando video:', error);

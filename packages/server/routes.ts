@@ -108,7 +108,11 @@ geminiRouter.post('/video', async (req, res) => {
       const validated = videoRequestSchema.parse(req.body);
       const response = await geminiService.generateVideo(
          validated.prompt,
-         validated.conversationId
+         validated.conversationId,
+         {
+            duration: validated.duration,
+            quality: validated.quality,
+         }
       );
       res.json({ success: true, data: response });
    } catch (error) {
