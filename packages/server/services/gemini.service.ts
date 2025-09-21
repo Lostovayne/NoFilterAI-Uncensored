@@ -4,6 +4,7 @@ import * as fs from 'node:fs';
 import * as path from 'node:path';
 import * as wav from 'wav';
 import { conversationRepository } from '../repositories/conversation.repository';
+import { memoryTools } from '../tools/memory-tools';
 import type { ChatRequest, ChatResponse } from '../types/model.types';
 import { MessageRole, TaskType } from '../types/model.types';
 
@@ -58,11 +59,12 @@ export const geminiService = {
    // Chat inteligente
    async sendMessage(request: ChatRequest): Promise<ChatResponse> {
       try {
-         console.log('🚀 Iniciando chat con Gemini 2.5 Pro:', {
+         console.log('🚀 Iniciando chat con Gemini 2.5 Pro con herramientas:', {
             taskType: request.taskType,
+            useKnowledgeBase: request.useKnowledgeBase,
          });
 
-         const { prompt, conversationId, taskType } = request;
+         const { prompt, conversationId, taskType, useKnowledgeBase } = request;
 
          // Seleccionar modelo según la tarea
          let modelName = 'gemini-2.5-flash-lite'; // Por defecto el más económico
@@ -78,42 +80,98 @@ export const geminiService = {
                break;
             case TaskType.CHAT:
             default:
-               modelName = 'gemini-2.5-flash-lite';
+               // Para chat normal, usar el modelo con soporte de herramientas
+               modelName = 'gemini-2.5-flash';
                break;
          }
 
          console.log(`🤖 Usando modelo: ${modelName}`);
 
-         // Almacenar mensaje del usuario
+         // Generar userId basado en conversationId para consistencia
+         const userId = crypto.SHA256(conversationId).toString().substring(0, 16);
+
+         // Buscar contexto relevante automáticamente
+         let contextualPrompt = prompt;
+         if (useKnowledgeBase) {
+            try {
+               const contextInfo = await memoryTools.searchLongTermMemory(
+                  userId,
+                  prompt.substring(0, 50)
+               );
+
+               if (
+                  contextInfo &&
+                  !contextInfo.includes('No se encontró') &&
+                  !contextInfo.includes('Error')
+               ) {
+                  contextualPrompt = `Contexto personal del usuario:\n${contextInfo}\n\nConsulta actual: ${prompt}`;
+                  console.log('✅ Contexto personal cargado automáticamente');
+               } else {
+                  console.log(
+                     '⚠️ No se encontró contexto previo o hubo error, continuando sin contexto'
+                  );
+               }
+            } catch (error) {
+               console.log('⚠️ Error al cargar contexto:', error);
+            }
+         } // Almacenar mensaje del usuario
          await conversationRepository.addMessage(conversationId, {
             role: MessageRole.USER,
             content: prompt,
          });
 
          console.log('💬 Enviando mensaje a Gemini...');
+
+         // Usar implementación más simple sin herramientas avanzadas por ahora
          const response = await ai.models.generateContent({
             model: modelName,
-            contents: prompt,
+            contents: contextualPrompt,
          });
 
-         const content = response.candidates?.[0]?.content?.parts?.[0]?.text || 'Sin respuesta';
+         const finalContent =
+            response.candidates?.[0]?.content?.parts?.[0]?.text || 'Sin respuesta';
+         const toolsUsed: string[] = [];
+
+         // Detectar y almacenar información personal automáticamente
+         if (useKnowledgeBase) {
+            const analysis = await memoryTools.analyzeUserInfo(prompt);
+            if (analysis.shouldStore) {
+               try {
+                  const storeResult = await memoryTools.storeLongTermMemory(
+                     userId,
+                     prompt,
+                     analysis.category
+                  );
+                  if (storeResult.includes('✅')) {
+                     toolsUsed.push('auto_memory_storage');
+                     console.log(
+                        `💾 Información personal detectada y almacenada: ${analysis.category}`
+                     );
+                  } else {
+                     console.log(`⚠️ Información detectada pero no almacenada: ${storeResult}`);
+                  }
+               } catch (error) {
+                  console.log('⚠️ Error en almacenamiento automático:', error);
+               }
+            }
+         }
 
          // Almacenar respuesta del asistente
          await conversationRepository.addMessage(conversationId, {
             role: MessageRole.ASSISTANT,
-            content,
+            content: finalContent,
          });
 
          return {
             id: crypto.SHA256(conversationId + Date.now()).toString(),
-            message: content,
+            message: finalContent,
             modelUsed: modelName,
-            toolsUsed: [],
+            toolsUsed,
             conversationId,
             usage: {
-               promptTokens: prompt.length / 4, // Estimación
-               completionTokens: content.length / 4,
-               totalTokens: (prompt.length + content.length) / 4,
+               promptTokens: contextualPrompt.length / 4, // Estimación
+               completionTokens: finalContent.length / 4,
+               totalTokens: (contextualPrompt.length + finalContent.length) / 4,
             },
          };
       } catch (error: unknown) {

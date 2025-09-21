@@ -1,6 +1,7 @@
 import express from 'express';
 import { z } from 'zod';
 import { chatController } from './controllers/chat.controller';
+import toolsRouter from './routes/tools.routes';
 import { chatService } from './services/chat.service';
 import { geminiService } from './services/gemini.service';
 import { ModelType, TaskType } from './types/model.types';
@@ -144,5 +145,6 @@ uncensoredRouter.post('/', async (req, res) => {
 // Montar sub-routers
 router.use('/gemini', geminiRouter);
 router.use('/uncensored', uncensoredRouter);
+router.use('/tools', toolsRouter);
 
 export default router;

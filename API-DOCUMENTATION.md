@@ -7,12 +7,28 @@
 - **Protocolo**: HTTP/HTTPS
 - **Autenticación**: No requerida (por ahora)
 
+## 🧠 Nuevas Características: Sistema de Herramientas (Tools)
+
+El backend ahora incluye un sistema inteligente de herramientas que permite a Gemini:
+
+- 🔄 **Memoria de Corto Plazo (Redis)**: Mantiene el contexto durante la conversación
+- 🧠 **Memoria de Largo Plazo (Upstash Search)**: Almacena información personal del usuario (preferencias, estilo de código, datos personales)
+- 🤖 **Detección Automática**: Identifica automáticamente cuándo almacenar información importante
+- 🔍 **Recuperación Contextual**: Carga automáticamente información relevante del usuario
+
 ## 🔧 Variables de Entorno Requeridas
 
 ```env
+# Requeridas
 GEMINI_API_KEY=tu_api_key_de_gemini
-UPSTASH_REDIS_REST_URL=opcional_para_persistencia
-UPSTASH_REDIS_REST_TOKEN=opcional_para_persistencia
+
+# Opcionales para herramientas de memoria
+UPSTASH_REDIS_REST_URL=tu_redis_url
+UPSTASH_REDIS_REST_TOKEN=tu_redis_token
+UPSTASH_SEARCH_REST_URL=tu_search_url
+UPSTASH_SEARCH_REST_TOKEN=tu_search_token
+
+# Opcional
 PORT=3000
 ```
 
@@ -260,6 +276,136 @@ Genera videos usando Veo 3.0.
 ```
 
 **⚠️ Nota:** La generación de video puede tomar varios minutos debido al polling de la API de Veo.
+
+## 🧠 Endpoints de Herramientas (Tools)
+
+### 1. Estado de las Herramientas
+
+**GET** `/api/chat/tools/status`
+
+Verifica qué herramientas están disponibles según la configuración.
+
+**Respuesta:**
+
+```json
+{
+   "success": true,
+   "status": {
+      "redis_configured": true,
+      "search_configured": true,
+      "tools_available": true,
+      "timestamp": "2025-09-21T10:30:00.000Z"
+   }
+}
+```
+
+### 2. Memoria de Corto Plazo (Redis)
+
+**POST** `/api/chat/tools/memory/short-term`
+
+Almacena información temporal para la conversación actual.
+
+**Body:**
+
+```json
+{
+   "conversationId": "conv_123456",
+   "key": "user_preference",
+   "data": "Prefiere respuestas concisas"
+}
+```
+
+**POST** `/api/chat/tools/memory/short-term/get`
+
+Recupera información temporal almacenada.
+
+**Body:**
+
+```json
+{
+   "conversationId": "conv_123456",
+   "key": "user_preference"
+}
+```
+
+### 3. Memoria de Largo Plazo (Upstash Search)
+
+**POST** `/api/chat/tools/memory/long-term`
+
+Almacena información personal del usuario de forma permanente.
+
+**Body:**
+
+```json
+{
+   "conversationId": "conv_123456",
+   "content": "Soy desarrollador senior especializado en React y Python",
+   "category": "skills"
+}
+```
+
+**Categorías disponibles:**
+
+- `personal_info`: Nombre, edad, ubicación, trabajo
+- `preferences`: Gustos, preferencias, estilo de comunicación
+- `skills`: Habilidades técnicas, experiencia, conocimientos
+- `goals`: Objetivos, metas, proyectos
+- `coding_style`: Estilo de programación, preferencias de código
+- `general`: Información general
+
+**POST** `/api/chat/tools/memory/long-term/search`
+
+Busca información personal del usuario.
+
+**Body:**
+
+```json
+{
+   "conversationId": "conv_123456",
+   "query": "habilidades de programación"
+}
+```
+
+### 4. Historial de Conversación
+
+**POST** `/api/chat/tools/memory/history`
+
+Obtiene el historial de la conversación actual.
+
+**Body:**
+
+```json
+{
+   "conversationId": "conv_123456"
+}
+```
+
+### 5. Análisis de Información
+
+**POST** `/api/chat/tools/memory/analyze`
+
+Analiza si un texto contiene información personal que debería almacenarse.
+
+**Body:**
+
+```json
+{
+   "content": "Me llamo Ana y trabajo como diseñadora UX"
+}
+```
+
+**Respuesta:**
+
+```json
+{
+   "success": true,
+   "data": {
+      "shouldStore": true,
+      "category": "personal_info",
+      "reason": "Información de personal_info detectada"
+   }
+}
+```
 
 ## 📁 Archivos Estáticos
 
