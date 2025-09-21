@@ -2,9 +2,9 @@ import { Search } from '@upstash/search';
 import * as crypto from 'crypto-js';
 import Openai from 'openai';
 import { conversationRepository } from '../repositories/conversation.repository';
-import { memoryTool, retrieveConversationMemory } from '../tools/memory-tool.example';
+import { retrieveConversationMemory } from '../tools/memory-tool.example';
 import type { ChatRequest, ChatResponse } from '../types/model.types';
-import { TaskType, MessageRole } from '../types/model.types';
+import { MessageRole, TaskType } from '../types/model.types';
 import { contextManagerService } from './context-manager.service';
 import { modelSelectorService } from './model-selector.service';
 
